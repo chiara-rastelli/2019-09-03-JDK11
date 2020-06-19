@@ -40,7 +40,7 @@ public class FoodController {
     private Button btnCammino; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxPorzioni"
-    private ComboBox<?> boxPorzioni; // Value injected by FXMLLoader
+    private ComboBox<String> boxPorzioni; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtResult"
     private TextArea txtResult; // Value injected by FXMLLoader
@@ -61,7 +61,24 @@ public class FoodController {
     @FXML
     void doCreaGrafo(ActionEvent event) {
     	txtResult.clear();
-    	txtResult.appendText("Creazione grafo...");
+    	if (this.txtCalorie.getText() == null) {
+    		this.txtResult.setText("Devi prima inserire un valore massimo per le calorie qui sopra!\n");
+    		return;
+    	}
+    	
+    	try {
+    		int numeroCalorie = Integer.parseInt(this.txtCalorie.getText());
+    		
+    		if (numeroCalorie < 0) {
+    			this.txtResult.appendText("Il numero di calorie inserite deve essere maggiore di zero!\n");
+    			return;
+    		}
+    		
+    		this.model.creaGrafo(numeroCalorie);
+    	}catch(NumberFormatException e) {
+    		this.txtResult.setText("Il numero delle calorie massime deve essere un intero!");
+    		return;
+    	}
     	
     }
 
@@ -79,5 +96,6 @@ public class FoodController {
     
     public void setModel(Model model) {
     	this.model = model;
+   // 	this.boxPorzioni.getItems().addAll(this.model.getPortionDisplayNames());
     }
 }
