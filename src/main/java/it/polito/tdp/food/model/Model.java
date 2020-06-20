@@ -13,6 +13,9 @@ public class Model {
 	
 	FoodDao db;
 	SimpleWeightedGraph<String, DefaultWeightedEdge> graph;
+	List<String> bestCammino;
+	int n;
+	int pesoMassimo;
 	
 	public Model() {
 		this.db = new FoodDao();
@@ -41,4 +44,41 @@ public class Model {
 		return daRitornare;
 	}
 	
+	public List<String> cercaCammino(int n, String iniziale) {
+		this.n = n;
+		this.bestCammino = new ArrayList<String>();
+		this.pesoMassimo = 0;
+		
+		List<String> parziale = new ArrayList<String>();
+		parziale.add(iniziale);
+		this.ricorri(parziale, 0);
+		if (this.bestCammino.size() == n)
+			return this.bestCammino;
+		else
+			return null;
+	}
+
+	private void ricorri(List<String> parziale, int pesoParziale) {
+		
+		//caso terminale: ho fatto n passi, se il peso del nuovo cammino (parziale) e' maggiore di quello che 
+		//avevo prima, sostituisco
+		if (parziale.size() == this.n) {
+			if (pesoParziale > this.pesoMassimo) {
+				this.bestCammino = new ArrayList<>(parziale);
+				this.pesoMassimo = pesoParziale;
+			}
+		return;
+		}
+		
+		//se no, vado avanti
+		for (String s : Graphs.neighborListOf(this.graph, parziale.get(parziale.size()-1))) {
+			if (!parziale.contains(s)) {
+				DefaultWeightedEdge e = this.graph.getEdge(s, parziale.get(parziale.size()-1));
+				parziale.add(s);
+				this.ricorri(parziale, (int)this.graph.getEdgeWeight(e)+pesoParziale);
+				parziale.remove(parziale.get(parziale.size()-1));
+			}
+		}
+		
+	}	
 }
